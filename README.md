@@ -5,4 +5,11 @@ Programm zu entfernen. Die Verbindung zur Cloud4Bees wird durch einen Webhook ko
 gleiche Firmware zu spielen. Updates der Firmware können nun problemlos Over the Air (OTA) an alle Photon4Bees - WLAN Stockwaagen
 gesendet werden.
 
+
 ![Particle Webhook Einstellung zur Weiterleitung der Daten an Cloud4Bees](./Webhook.JPG?raw=true "Webhook Einstellungen")
+
+
+![Particle Webhook Einstellungen für get_scalefactor](./get_scalefactor_Webhook.JPG?raw=true "Webhook Einstellungen")
+
+
+![Particle Webhook Einstellungen für get_offset](./get_offset_Webhook.JPG?raw=true "Webhook Einstellungen")
