@@ -18,10 +18,7 @@ Die Verbindung zum Datenserver wird mittels Webhooks in der [Particle Console] (
 3. Wählen Sie den Menüpunkt **Integrations**
 4. Klicken Sie auf **New Integration** ![Particle Integration](./New Integration.JPG?raw=true "Particle New Integration")
 5. Füllen Sie das Formular wie in der folgenden Abbildung angeben aus. Ersetzen Sie dabei XXXXXXXXXXXX mit Ihrem gültigen API_key
-   den Sie zuvor auf [cloud.4bees.at](http://cloud.4bees.at) angelegt haben* Klicken Sie auf Create Webhook
-
-
-![Particle Webhook Einstellung zur Weiterleitung der Daten an Cloud4Bees](./Webhook.JPG?raw=true "Webhook Einstellungen")
+   den Sie zuvor auf [cloud.4bees.at](http://cloud.4bees.at) angelegt haben* Klicken Sie auf Create Webhook ![Particle Webhook Einstellung zur Weiterleitung der Daten an Cloud4Bees](./Webhook.JPG?raw=true "Webhook Einstellungen")
 
 
 
@@ -32,14 +29,10 @@ dann in den Feldern 7 und 8 des Cloud4bees Kanals gespeichert. Über Webhooks wi
 hergestellt. Im Setup des Programms, d. h. bei jedem Neustart der Waage werden die beiden Werte dann ausgelesen und die Waage damit
 kalibriert. 
 
-1. Webhook für den Scalefactor erstellen:
-
-![Particle Webhook Einstellungen für get_scalefactor](./get_scalefactor_Webhook.JPG?raw=true "Webhook Einstellungen")
+1. Webhook für den Scalefactor erstellen: ![Particle Webhook Einstellungen für get_scalefactor](./get_scalefactor_Webhook.JPG?raw=true "Webhook Einstellungen")
 
 
-2. Webhook für den Offset erstellen:
-
-![Particle Webhook Einstellungen für get_offset](./get_offset_Webhook.JPG?raw=true "Webhook Einstellungen")
+2. Webhook für den Offset erstellen: ![Particle Webhook Einstellungen für get_offset](./get_offset_Webhook.JPG?raw=true "Webhook Einstellungen")
 
 
 3. Der Scalefactor wird auf 1 gesetzt und der Offset auf 0; Der beiden Werten werden mittels HTTP Get Request in den Feldern 7 
