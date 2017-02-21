@@ -16,11 +16,7 @@ Die Verbindung zum Datenserver wird mittels Webhooks in der [Particle Console] (
 1. Erstellen Sie ein Konto bei [Particle](https://particle.io)
 2. Loggen Sie sich in die Console ein
 3. Wählen Sie den Menüpunkt **Integrations**
-4. Klicken Sie auf **New Integration**
-
-![Particle Integration](./New Integration.JPG?raw=true "Particle New Integration")
-
-
+4. Klicken Sie auf **New Integration** ![Particle Integration](./New Integration.JPG?raw=true "Particle New Integration")
 5. Füllen Sie das Formular wie in der folgenden Abbildung angeben aus. Ersetzen Sie dabei XXXXXXXXXXXX mit Ihrem gültigen API_key
    den Sie zuvor auf [cloud.4bees.at](http://cloud.4bees.at) angelegt haben* Klicken Sie auf Create Webhook
 
