@@ -22,7 +22,7 @@ Die Verbindung zum Datenserver wird mittels Webhooks in der [Particle Console] (
 
 
 5. Füllen Sie das Formular wie in der folgenden Abbildung angeben aus. Ersetzen Sie dabei XXXXXXXXXXXX mit Ihrem gültigen API_key
-  den Sie zuvor auf [cloud.4bees.at](http://cloud.4bees.at) angelegt haben* Klicken Sie auf Create Webhook 5
+   den Sie zuvor auf [cloud.4bees.at](http://cloud.4bees.at) angelegt haben* Klicken Sie auf Create Webhook
 
 
 ![Particle Webhook Einstellung zur Weiterleitung der Daten an Cloud4Bees](./Webhook.JPG?raw=true "Webhook Einstellungen")
