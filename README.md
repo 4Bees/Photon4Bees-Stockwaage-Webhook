@@ -31,6 +31,11 @@ Die Verbindung zum Datenserver wird mittels Webhooks in der [Particle Console] (
 
 ## Kalibrierung der Stockwaage
 
+Um die Stockwaage zu kalibrieren müssen zunächst der **Scalefactor** und der **Offset** ermittelt werden. Diese beiden Werte werden
+dann in den Feldern 7 und 8 des Cloud4bees Kanals gespeichert. Über Webhooks wird dann die Verbindung mit der Firmware der Waage 
+hergestellt. Im Setup des Programms, d. h. bei jedem Neustart der Waage werden die beiden Werte dann ausgelesen und die Waage damit
+kalibriert. 
+
 
 ![Particle Webhook Einstellungen für get_scalefactor](./get_scalefactor_Webhook.JPG?raw=true "Webhook Einstellungen")
 
