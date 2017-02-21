@@ -28,6 +28,10 @@ Die Verbindung zum Datenserver wird mittels Webhooks in der [Particle Console] (
 ![Particle Webhook Einstellung zur Weiterleitung der Daten an Cloud4Bees](./Webhook.JPG?raw=true "Webhook Einstellungen")
 
 
+
+## Kalibrierung der Stockwaage
+
+
 ![Particle Webhook Einstellungen für get_scalefactor](./get_scalefactor_Webhook.JPG?raw=true "Webhook Einstellungen")
 
 
