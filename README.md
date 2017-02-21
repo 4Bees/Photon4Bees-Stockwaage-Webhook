@@ -36,6 +36,19 @@ dann in den Feldern 7 und 8 des Cloud4bees Kanals gespeichert. Über Webhooks wi
 hergestellt. Im Setup des Programms, d. h. bei jedem Neustart der Waage werden die beiden Werte dann ausgelesen und die Waage damit
 kalibriert. 
 
+1. Der Scalefactor wird auf 1 gesetzt und der Offset auf 0; Der beiden Werten werden mittels HTTP Get Request in den Feldern 7 
+   (Scalefactor) und Feld 8 (Offset) gespeichert: http://cloud.4bees.at/update?api_key=xxxxxxxxxx&field7=1&field8=0
+   **Wichtig: Der Kanal muss dafür öffentlich gemacht werden**
+2. Die Waage wird jetzt eingeschaltet und nach einigen Sekunden kann der Wert auf [cloud.4bees.at](http://cloud.4bees.at)
+   -> Kanal ausgelesen werden; Dieser Wert notiert man sich auf einem Notizblock
+3. Jetzt wird die Waage mit einem bekannten Gewicht x (bsp. 10 kg) belastet und der Wert wird wider auf cloud.4bees.at ausgelesen
+   und notiert.
+4. Den **Scalefactor** erhält man über folgenden Formel: **Scalefactor = (Wert_x - Wert_0) / x**
+5. Der **Offset** ergibt sich aus: **Offset = Wert_0 / Scalefactor
+6. Beide Werte werden jetzt im Feld 7 und Feld 8 des entsprechenden Kanals gespeichert:
+   http://cloud.4bees.at/update?api_key=xxxxxxxxxxx&field7=Scalefactor&field8=Offeset
+7. Die Waage muss jetzt neu gestartet werden
+
 
 ![Particle Webhook Einstellungen für get_scalefactor](./get_scalefactor_Webhook.JPG?raw=true "Webhook Einstellungen")
 
