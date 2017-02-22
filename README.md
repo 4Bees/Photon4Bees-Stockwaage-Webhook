@@ -7,6 +7,16 @@ gleiche Firmware zu spielen. Updates der Firmware können nun problemlos Over th
 gesendet werden.
 
 
+## SoftAP HTTP Seiten zur Herstellung einer WLAN Verbindung
+
+![SoftAP Seite I zur Herstellung einer WLAN Verbindung](./SoftAP Setup I.JPG?raw=true "SoftAP Seite I zur Herstellung einer
+WLAN Verbindung")
+
+![SoftAP Seite II zur Herstellung einer WLAN Verbindung](./SoftAP Setup II.JPG?raw=true "SoftAP Seite II zur Herstellung einer
+WLAN Verbindung")
+
+
+
 ## Verbindung mit Cloud4Bees
 
 Die Messwerte der [Photon4Bees WLAN-Stockwaage](http://www.4bees.at/wiki/-/wiki/Main/Photon4Bees+-+Die+WLAN+Stockwaage) werden auf
