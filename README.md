@@ -1,5 +1,10 @@
 # Photon4Bees - WLAN Stockwaage - Webhook
 
+## Bauanleitung der Photon4Bees - WLAN Stockwaage
+
+Die Bauanleitung der Photon4Bees WLAN Stockwaage findet ihr im [Wiki von 4Bees.at](http://www.4bees.at/wiki/-/wiki/Main/Photon4Bees+-+Die+WLAN+Stockwaage).
+## Software für die Photon4Bees - WLAN Stockwaage
+
 Diese Software verwendet Particle Webhooks zur Übermittlung der Messwerte an [cloud4Bees.at](http://cloud.4bees.at)
 . Dadurch ist es möglich den API_Key aus dem
 Programm zu entfernen. Die Verbindung zur Cloud4Bees wird durch einen Webhook konfiguriert. Es ist damit möglich auf alle Waagen die
