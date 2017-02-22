@@ -3,8 +3,11 @@
 #include "HX711.h"
 #include "Particle.h"  //Softap_http
 #include "softap_http.h"  //SoftAP
+#include "Adafruit_DHT.h"
+
 
 //SoftAP HTTP Seiten zur Herstellung einer WLAN Verbindung
+//*******************SoftAP ist nur für Photon*************************
 struct Page
 {
     const char* url;
@@ -75,8 +78,20 @@ void myPage(const char* url, ResponseCallback* cb, void* cbArg, Reader* body, Wr
 
 STARTUP(softap_set_application_page_handler(myPage, nullptr));
 
+//*************SoftAP ist nur für Photon******************************
 
 
+// DHT humidity/temperature sensors
+#define DHTPIN 3     // what pin we're connected to
+
+// Uncomment whatever type you're using!
+//#define DHTTYPE DHT11		// DHT 11
+#define DHTTYPE DHT22		// DHT 22 (AM2302)
+//#define DHTTYPE DHT21		// DHT 21 (AM2301)
+
+DHT dht(DHTPIN, DHTTYPE);
+
+//HX711 Wägezellenverstärker
 #define DOUT  A0
 #define CLK  A1
 
@@ -89,7 +104,13 @@ float offset = 0;
 float scalefactor = 1;
 
 float floatGewicht = 0;
-String  stringGewicht = "";
+String stringGewicht = "";
+
+float floatHumidity = 0;
+String stringHumidity = "";
+
+float floatTemperature = 0;
+String stringTemperature ="";
 
 
 void setup() {
@@ -125,16 +146,19 @@ void setup() {
                                                       4.Divide the result in step 3 to your known weight. You should get about the parameter you need to pass to set_scale.
                                                       5.Adjust the parameter in step 4 until you get an accurate reading.
                                                   */
+      //Begin DHT communication
+    	dht.begin();
 
 }
 
 void loop() {
-
+  /*
     Serial.print("Scalefactor: ");
     Serial.println(str_scalefactor);
     Serial.print("Offset: ");
     Serial.println(str_offset);
     delay(10000);
+  */
 
     scale.power_up();
     //scale.get_units(10) returns the medium of 10 measures
@@ -145,7 +169,15 @@ void loop() {
 
     scale.power_down();
 
-
+    // Reading temperature or humidity takes about 250 milliseconds!
+    // Sensor readings may also be up to 2 seconds 'old' (its a
+    // very slow sensor)
+    delay(2000);
+    	floatHumidity = dht.getHumidity();
+      stringHumidity = String(floatHumidity, 2),
+    // Read temperature as Celsius
+    	floatTemperature = dht.getTempCelcius();
+      stringTemperature = String(floatTemperature, 2);
 
 }
 
@@ -159,13 +191,14 @@ void gotOffset(const char *name, const char *data) {
     str_offset = String(data);
 }
 
+
 String JSON() {
  String ret = "&field1=";
   ret.concat(stringGewicht);
-  /*ret.concat("&field2=");
-  ret.concat(20);
+  ret.concat("&field2=");
+  ret.concat(stringTemperature);
   ret.concat("&field3=");
-  ret.concat(30);
-  */
+  ret.concat(stringHumidity);
+
   return ret;
 }
