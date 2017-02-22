@@ -9,8 +9,15 @@ gesendet werden.
 
 ## SoftAP HTTP Seiten zur Herstellung einer WLAN Verbindung
 
+Wenn das Photon im Listening Mode (LED blinkt blau), dann stellt es einen temporären Access Point (AP) und einen HTTP Server auf Port 80
+zur Verfügung. Der HTTP Server wird verwendet, um die WLAN Verbindung zu konfigurieren. Verbinden Sie dazu ihren PC mit dem WLAN Netz
+des Photon und geben Sie in ihrem Browser die Adresse http://192.168.0.1 ein und folgen Sie den Anweisungen.
+
 ![SoftAP Seite I zur Herstellung einer WLAN Verbindung](./SoftAP Setup I.JPG?raw=true "SoftAP Seite I zur Herstellung einer
 WLAN Verbindung")
+
+Sobald der PC mit dem WLAN Netz verbunden ist können Sie die Zugangsdaten des WLAN Netzes eingeben mit welchem sich das Photon 
+verbinden soll.
 
 ![SoftAP Seite II zur Herstellung einer WLAN Verbindung](./SoftAP Setup II.JPG?raw=true "SoftAP Seite II zur Herstellung einer
 WLAN Verbindung")
