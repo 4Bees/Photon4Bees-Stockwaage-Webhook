@@ -4,6 +4,7 @@
 #include "Particle.h"  //Softap_http
 #include "softap_http.h"  //SoftAP
 #include "Adafruit_DHT.h"
+#include "math.h"
 
 
 //SoftAP HTTP Seiten zur Herstellung einer WLAN Verbindung
@@ -82,14 +83,17 @@ STARTUP(softap_set_application_page_handler(myPage, nullptr));
 
 
 // DHT humidity/temperature sensors
-#define DHTPIN 3     // what pin we're connected to
+#define DHTPIN3 3     // what pin we're connected to
+#define DHTPIN4 4
 
 // Uncomment whatever type you're using!
 //#define DHTTYPE DHT11		// DHT 11
-#define DHTTYPE DHT22		// DHT 22 (AM2302)
+#define DHTTYPE3 DHT22		// DHT 22 (AM2302)
+#define DHTTYPE4 DHT22		// DHT 22 (AM2302)
 //#define DHTTYPE DHT21		// DHT 21 (AM2301)
 
-DHT dht(DHTPIN, DHTTYPE);
+DHT dht_pin3(DHTPIN3, DHTTYPE3);
+DHT dht_pin4(DHTPIN4, DHTTYPE4);
 
 //HX711 Wägezellenverstärker
 #define DOUT  A0
@@ -106,11 +110,17 @@ float scalefactor = 1;
 float floatGewicht = 0;
 String stringGewicht = "";
 
-float floatHumidity = 0;
-String stringHumidity = "";
+float floatHumidity3 = 0;
+String stringHumidity3 = "";
 
-float floatTemperature = 0;
-String stringTemperature ="";
+float floatTemperature3 = 0;
+String stringTemperature3 ="";
+
+float floatHumidity4 = 0;
+String stringHumidity4 = "";
+
+float floatTemperature4 = 0;
+String stringTemperature4 ="";
 
 
 void setup() {
@@ -147,7 +157,8 @@ void setup() {
                                                       5.Adjust the parameter in step 4 until you get an accurate reading.
                                                   */
       //Begin DHT communication
-    	dht.begin();
+    	dht_pin3.begin();
+      dht_pin4.begin();
 
 }
 
@@ -172,12 +183,18 @@ void loop() {
     // Reading temperature or humidity takes about 250 milliseconds!
     // Sensor readings may also be up to 2 seconds 'old' (its a
     // very slow sensor)
-    delay(2000);
-    	floatHumidity = dht.getHumidity();
-      stringHumidity = String(floatHumidity, 2),
+      delay(5000);
+    	floatHumidity3 = dht_pin3.getHumidity();
+      stringHumidity3 = String(floatHumidity3, 2),
     // Read temperature as Celsius
-    	floatTemperature = dht.getTempCelcius();
-      stringTemperature = String(floatTemperature, 2);
+    	floatTemperature3 = dht_pin3.getTempCelcius();
+      stringTemperature3 = String(floatTemperature3, 2);
+
+      floatHumidity4 = dht_pin4.getHumidity();
+      stringHumidity4 = String(floatHumidity4, 2),
+    // Read temperature as Celsius
+    	floatTemperature4 = dht_pin4.getTempCelcius();
+      stringTemperature4 = String(floatTemperature4, 2);
 
 }
 
@@ -196,9 +213,14 @@ String JSON() {
  String ret = "&field1=";
   ret.concat(stringGewicht);
   ret.concat("&field2=");
-  ret.concat(stringTemperature);
+  ret.concat(stringTemperature3);
   ret.concat("&field3=");
-  ret.concat(stringHumidity);
+  ret.concat(stringHumidity3);
+  ret.concat("&field4=");
+  ret.concat(stringTemperature4);
+  ret.concat("&field5=");
+  ret.concat(stringHumidity4);
+
 
   return ret;
 }
