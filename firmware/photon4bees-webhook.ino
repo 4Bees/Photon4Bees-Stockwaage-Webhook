@@ -4,8 +4,7 @@
 #include "Particle.h"  //Softap_http
 #include "softap_http.h"  //SoftAP
 #include "Adafruit_DHT.h"
-#include "SparkFunMAX17043.h" // Include the SparkFun MAX17043 library
-
+#include "math.h"
 
 
 //SoftAP HTTP Seiten zur Herstellung einer WLAN Verbindung
@@ -115,16 +114,13 @@ float floatHumidity3 = 0;
 String stringHumidity3 = "";
 
 float floatTemperature3 = 0;
-String stringTemperature3 = "";
+String stringTemperature3 ="";
 
 float floatHumidity4 = 0;
 String stringHumidity4 = "";
 
 float floatTemperature4 = 0;
-String stringTemperature4 = "";
-
-double soc = 0; // Variable to keep track of LiPo state-of-charge (SOC)
-String stringSOC = "";
+String stringTemperature4 ="";
 
 
 void setup() {
@@ -164,16 +160,16 @@ void setup() {
     	dht_pin3.begin();
       dht_pin4.begin();
 
-      // Set up the MAX17043 LiPo fuel gauge:
-      lipo.begin(); // Initialize the MAX17043 LiPo fuel gauge
-
-      // Quick start restarts the MAX17043 in hopes of getting a more accurate
-      // guess for the SOC.
-      lipo.quickStart();
-
 }
 
 void loop() {
+  /*
+    Serial.print("Scalefactor: ");
+    Serial.println(str_scalefactor);
+    Serial.print("Offset: ");
+    Serial.println(str_offset);
+    delay(10000);
+  */
 
     scale.power_up();
     //scale.get_units(10) returns the medium of 10 measures
@@ -200,15 +196,6 @@ void loop() {
     	floatTemperature4 = dht_pin4.getTempCelcius();
       stringTemperature4 = String(floatTemperature4, 2);
 
-    // lipo.getSOC() returns the estimated state of charge (e.g. 79%)
-      soc = lipo.getSOC();
-      stringSOC = String(soc);
-
-      delay(1000);
-
-      //System.sleep(SLEEP_MODE_DEEP, 60);
-
-
 }
 
 // This function will get called when scalefactor comes in
@@ -233,8 +220,6 @@ String JSON() {
   ret.concat(stringTemperature4);
   ret.concat("&field5=");
   ret.concat(stringHumidity4);
-  ret.concat("&field6=");
-  ret.concat(stringSOC);
 
 
   return ret;
