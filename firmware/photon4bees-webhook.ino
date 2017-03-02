@@ -178,7 +178,7 @@ void setup() {
     Particle.publish("get_scalefactor");
     delay(1000);
     Particle.publish("get_offset");
-    delay(5000);
+    delay(1000);
     scalefactor = str_scalefactor.toFloat();
     offset = str_offset.toFloat();
 
@@ -190,36 +190,22 @@ void setup() {
                                                       4.Divide the result in step 3 to your known weight. You should get about the parameter you need to pass to set_scale.
                                                       5.Adjust the parameter in step 4 until you get an accurate reading.
                                                   */
-      //Begin DHT communication
-    	dht_pin3.begin();
-      dht_pin4.begin();
 
-      // Set up the MAX17043 LiPo fuel gauge:
-      lipo.begin(); // Initialize the MAX17043 LiPo fuel gauge
-
-      // Quick start restarts the MAX17043 in hopes of getting a more accurate
-      // guess for the SOC.
-      lipo.quickStart();
 
 }
 
 void loop() {
-  /*
-    Serial.print("Scalefactor: ");
-    Serial.println(str_scalefactor);
-    Serial.print("Offset: ");
-    Serial.println(str_offset);
-    delay(10000);
-  */
 
     scale.power_up();
     //scale.get_units(10) returns the medium of 10 measures
     floatGewicht = (scale.get_units(10) - offset);
     stringGewicht =  String(floatGewicht, 2);
 
-    Particle.publish("cloud4bees", JSON(), PRIVATE); // Send JSON Particle Cloud
-
     scale.power_down();
+
+    //Begin DHT communication
+      dht_pin3.begin();
+      dht_pin4.begin();
 
     // Reading temperature or humidity takes about 250 milliseconds!
     // Sensor readings may also be up to 2 seconds 'old' (its a
@@ -237,9 +223,24 @@ void loop() {
     	floatTemperature4 = dht_pin4.getTempCelcius();
       stringTemperature4 = String(floatTemperature4, 2);
 
+    // Set up the MAX17043 LiPo fuel gauge:
+      lipo.begin(); // Initialize the MAX17043 LiPo fuel gauge
+
+    // Quick start restarts the MAX17043 in hopes of getting a more accurate
+    // guess for the SOC.
+      lipo.quickStart();
+      delay(1000);
+
     // lipo.getSOC() returns the estimated state of charge (e.g. 79%)
 	    soc = lipo.getSOC();
       stringSOC = String(soc);
+      delay(1000);
+
+      Particle.publish("cloud4bees", JSON(), PRIVATE); // Send JSON Particle Cloud
+
+      delay(30000);
+
+      System.sleep(SLEEP_MODE_DEEP, 600);
 
 }
 
