@@ -83,37 +83,6 @@ STARTUP(softap_set_application_page_handler(myPage, nullptr));
 //*************SoftAP ist nur für Photon******************************
 
 
-//********************************************************************
-// Automatically mirror the onboard RGB LED to an external RGB LED
-// No additional code needed in setup() or loop()
-
-class ExternalRGB {
-  public:
-    ExternalRGB(pin_t r, pin_t g, pin_t b) : pin_r(r), pin_g(g), pin_b(b) {
-      pinMode(pin_r, OUTPUT);
-      pinMode(pin_g, OUTPUT);
-      pinMode(pin_b, OUTPUT);
-      RGB.onChange(&ExternalRGB::handler, this);
-    }
-
-    void handler(uint8_t r, uint8_t g, uint8_t b) {
-
-      analogWrite(pin_r, r);
-      analogWrite(pin_g, g);
-      analogWrite(pin_b, b);
-    }
-
-private:
-      pin_t pin_r;
-      pin_t pin_g;
-      pin_t pin_b;
-};
-
-// Connect an external RGB LED to D0, D1 and D2 (R, G, and B)
-ExternalRGB myRGB(D0, D1, D2);
-
-//********************************************************************
-
 // DHT humidity/temperature sensors
 #define DHTPIN3 3     // what pin we're connected to
 #define DHTPIN4 4
