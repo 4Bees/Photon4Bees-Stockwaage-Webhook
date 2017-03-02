@@ -235,9 +235,9 @@ void loop() {
       soc = lipo.getSOC();
       stringSOC = String(soc);
 
-      delay(1000);
+      delay(30000);
 
-      //System.sleep(SLEEP_MODE_DEEP, 60);
+      System.sleep(SLEEP_MODE_DEEP, 3550);
 
 
 }

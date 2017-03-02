@@ -1,31 +1,23 @@
 #include "HX711.h"
 
-void bitWrite(uint8_t &x, unsigned int n, bool b) {
-  if (n <= 7 && n >= 0) {
-      if (b) {
-          x |= (1u << n);
-      } else {
-          x &= ~(1u << n);
-      }
-  }
+HX711::HX711(byte dout, byte pd_sck, byte gain) {
+	begin(dout, pd_sck, gain);
 }
 
-HX711::HX711(byte dout, byte pd_sck, byte gain) {
-	PD_SCK 	= pd_sck;
-	DOUT 	= dout;
+HX711::HX711() {
+}
+
+HX711::~HX711() {
+}
+
+void HX711::begin(byte dout, byte pd_sck, byte gain) {
+	PD_SCK = pd_sck;
+	DOUT = dout;
 
 	pinMode(PD_SCK, OUTPUT);
 	pinMode(DOUT, INPUT);
 
 	set_gain(gain);
-}
-
-HX711::~HX711() {
-
-}
-
-bool HX711::is_ready() {
-	return digitalRead(DOUT) == LOW;
 }
 
 void HX711::set_gain(byte gain) {
@@ -42,43 +34,57 @@ void HX711::set_gain(byte gain) {
 	}
 
 	digitalWrite(PD_SCK, LOW);
-	read();
+	//read();
 }
 
-byte HX711::get_gain() {
-  return GAIN;
-}
-
-long HX711::read() {
+long HX711::read(time_t timeout) {
 	// wait for the chip to become ready
-	while (!is_ready()) Spark.process();
+	for (time_t ms=millis(); !is_ready() && (millis() - ms < timeout);) {
+		// Will do nothing on Arduino but
+    // prevent resets of ESP8266 (Watchdog Issue)
+    // or keeps cloud housekeeping running on Particle devices
+		yield();
+	}
+  // still not ready after timeout periode, report error Not-A-Number
+  if (!is_ready()) return NAN;
 
-	byte data[3];
+	unsigned long value = 0;
+	uint8_t data[3] = { 0 };
+	uint8_t filler = 0x00;
 
 	// pulse the clock pin 24 times to read the data
-	for (byte j = 3; j--;) {
-		for (char i = 8; i--;) {
-			digitalWrite(PD_SCK, HIGH);
-			bitWrite(data[j], i, digitalRead(DOUT));
-			digitalWrite(PD_SCK, LOW);
-		}
-	}
+	data[2] = shiftIn(DOUT, PD_SCK, MSBFIRST);
+	data[1] = shiftIn(DOUT, PD_SCK, MSBFIRST);
+	data[0] = shiftIn(DOUT, PD_SCK, MSBFIRST);
 
 	// set the channel and the gain factor for the next reading using the clock pin
-	for (int i = 0; i < GAIN; i++) {
+	for (unsigned int i = 0; i < GAIN; i++) {
 		digitalWrite(PD_SCK, HIGH);
 		digitalWrite(PD_SCK, LOW);
 	}
 
-	data[2] ^= 0x80;
+	// Replicate the most significant bit to pad out a 32-bit signed integer
+	if (data[2] & 0x80) {
+		filler = 0xFF;
+	} else {
+		filler = 0x00;
+	}
 
-	return ((uint32_t) data[2] << 16) | ((uint32_t) data[1] << 8) | (uint32_t) data[0];
+	// Construct a 32-bit signed integer
+	value = static_cast<unsigned long>(filler)  << 24
+		  | static_cast<unsigned long>(data[2]) << 16
+		  | static_cast<unsigned long>(data[1]) << 8
+		  | static_cast<unsigned long>(data[0]) ;
+
+	return static_cast<long>(value);
 }
 
 long HX711::read_average(byte times) {
+  if (times <= 0) return NAN;
 	long sum = 0;
 	for (byte i = 0; i < times; i++) {
 		sum += read();
+		yield();
 	}
 	return sum / times;
 }
@@ -97,11 +103,24 @@ void HX711::tare(byte times) {
 }
 
 void HX711::set_scale(float scale) {
-	SCALE = scale;
+  if (scale) {
+	  SCALE = scale;
+  }
+  else {
+    SCALE = 1;
+  }
+}
+
+float HX711::get_scale() {
+	return SCALE;
 }
 
 void HX711::set_offset(long offset) {
 	OFFSET = offset;
+}
+
+long HX711::get_offset() {
+	return OFFSET;
 }
 
 void HX711::power_down() {
