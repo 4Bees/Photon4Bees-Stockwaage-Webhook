@@ -176,9 +176,9 @@ void setup() {
 
     // publish the event that will trigger our Webhook
     Particle.publish("get_scalefactor");
-    delay(1000);
+    delay(5000);
     Particle.publish("get_offset");
-    delay(1000);
+    delay(5000);
     scalefactor = str_scalefactor.toFloat();
     offset = str_offset.toFloat();
 
@@ -197,6 +197,7 @@ void setup() {
 void loop() {
 
     scale.power_up();
+    delay(5000);
     //scale.get_units(10) returns the medium of 10 measures
     floatGewicht = (scale.get_units(10) - offset);
     stringGewicht =  String(floatGewicht, 2);
@@ -238,7 +239,7 @@ void loop() {
 
       Particle.publish("cloud4bees", JSON(), PRIVATE); // Send JSON Particle Cloud
 
-      delay(30000);
+      //delay(30000);
 
       System.sleep(SLEEP_MODE_DEEP, 600);
 
