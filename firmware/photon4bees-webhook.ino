@@ -6,6 +6,7 @@
 #include "Adafruit_DHT.h"
 #include "SparkFunMAX17043.h" // Include the SparkFun MAX17043 library
 
+//STARTUP(WiFi.selectAntenna(ANT_AUTO));
 
 //SoftAP HTTP Seiten zur Herstellung einer WLAN Verbindung
 //*******************SoftAP ist nur für Photon*************************
@@ -239,9 +240,9 @@ void loop() {
 
       Particle.publish("cloud4bees", JSON(), PRIVATE); // Send JSON Particle Cloud
 
-      //delay(30000);
+      //delay(1000);
 
-      System.sleep(SLEEP_MODE_DEEP, 600);
+      System.sleep(SLEEP_MODE_DEEP, 3550);
 
 }
 
