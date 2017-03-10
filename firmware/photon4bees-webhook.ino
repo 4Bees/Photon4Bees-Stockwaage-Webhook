@@ -6,7 +6,7 @@
 #include "Adafruit_DHT.h"
 #include "SparkFunMAX17043.h" // Include the SparkFun MAX17043 library
 
-//STARTUP(WiFi.selectAntenna(ANT_AUTO));
+STARTUP(WiFi.selectAntenna(ANT_EXTERNAL)); // selects the u.FL antenna
 
 //SoftAP HTTP Seiten zur Herstellung einer WLAN Verbindung
 //*******************SoftAP ist nur für Photon*************************
@@ -160,7 +160,8 @@ String stringSOC = "";
 
 void setup() {
   // put your setup code here, to run once:
-  // Begin serial communication
+
+    // Begin serial communication
     Serial.begin(115200);
 
     // Listen for the webhook response, and call gotWeatherData()
@@ -240,7 +241,10 @@ void loop() {
 
       Particle.publish("cloud4bees", JSON(), PRIVATE); // Send JSON Particle Cloud
 
-      //delay(1000);
+
+      delay(60000);
+
+
 
       System.sleep(SLEEP_MODE_DEEP, 3550);
 
