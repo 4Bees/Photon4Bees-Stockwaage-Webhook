@@ -114,18 +114,22 @@ ExternalRGB myRGB(D0, D1, D2);
 
 //********************************************************************
 
+const int buttonPin = D4;     // Pushbutton for Listening Mode
+
+int buttonState = 0;         // variable for reading the pushbutton status
+
 // DHT humidity/temperature sensors
 #define DHTPIN3 3     // what pin we're connected to
-#define DHTPIN4 4
+//#define DHTPIN4 4
 
 // Uncomment whatever type you're using!
 //#define DHTTYPE DHT11		// DHT 11
 #define DHTTYPE3 DHT22		// DHT 22 (AM2302)
-#define DHTTYPE4 DHT22		// DHT 22 (AM2302)
+//#define DHTTYPE4 DHT22		// DHT 22 (AM2302)
 //#define DHTTYPE DHT21		// DHT 21 (AM2301)
 
 DHT dht_pin3(DHTPIN3, DHTTYPE3);
-DHT dht_pin4(DHTPIN4, DHTTYPE4);
+//DHT dht_pin4(DHTPIN4, DHTTYPE4);
 
 //HX711 Wägezellenverstärker
 #define DOUT  A0
@@ -148,11 +152,11 @@ String stringHumidity3 = "";
 float floatTemperature3 = 0;
 String stringTemperature3 ="";
 
-float floatHumidity4 = 0;
-String stringHumidity4 = "";
+//float floatHumidity4 = 0;
+//String stringHumidity4 = "";
 
-float floatTemperature4 = 0;
-String stringTemperature4 ="";
+//float floatTemperature4 = 0;
+//String stringTemperature4 ="";
 
 double soc = 0; // Variable to keep track of LiPo state-of-charge (SOC)
 String stringSOC = "";
@@ -160,6 +164,20 @@ String stringSOC = "";
 
 void setup() {
   // put your setup code here, to run once:
+
+    // initialize the pushbutton pin as an input:
+    pinMode(buttonPin, INPUT);
+
+    // read the state of the pushbutton value:
+    buttonState = digitalRead(buttonPin);
+
+    // check if the pushbutton is pressed.
+    // if it is, the buttonState is HIGH:
+    if (buttonState == HIGH) {
+      WiFi.listen();
+    } else {
+      // nothing
+           }
 
     // Begin serial communication
     Serial.begin(115200);
@@ -208,7 +226,7 @@ void loop() {
 
     //Begin DHT communication
       dht_pin3.begin();
-      dht_pin4.begin();
+      //dht_pin4.begin();
 
     // Reading temperature or humidity takes about 250 milliseconds!
     // Sensor readings may also be up to 2 seconds 'old' (its a
@@ -220,11 +238,11 @@ void loop() {
     	floatTemperature3 = dht_pin3.getTempCelcius();
       stringTemperature3 = String(floatTemperature3, 2);
 
-      floatHumidity4 = dht_pin4.getHumidity();
-      stringHumidity4 = String(floatHumidity4, 2),
+      //floatHumidity4 = dht_pin4.getHumidity();
+      //stringHumidity4 = String(floatHumidity4, 2),
     // Read temperature as Celsius
-    	floatTemperature4 = dht_pin4.getTempCelcius();
-      stringTemperature4 = String(floatTemperature4, 2);
+    	//floatTemperature4 = dht_pin4.getTempCelcius();
+      //stringTemperature4 = String(floatTemperature4, 2);
 
     // Set up the MAX17043 LiPo fuel gauge:
       lipo.begin(); // Initialize the MAX17043 LiPo fuel gauge
@@ -241,10 +259,7 @@ void loop() {
 
       Particle.publish("cloud4bees", JSON(), PRIVATE); // Send JSON Particle Cloud
 
-
-      delay(60000);
-
-
+      delay(1000);
 
       System.sleep(SLEEP_MODE_DEEP, 3550);
 
@@ -268,10 +283,10 @@ String JSON() {
   ret.concat(stringTemperature3);
   ret.concat("&field3=");
   ret.concat(stringHumidity3);
-  ret.concat("&field4=");
-  ret.concat(stringTemperature4);
-  ret.concat("&field5=");
-  ret.concat(stringHumidity4);
+  //ret.concat("&field4=");
+  //ret.concat(stringTemperature4);
+  //ret.concat("&field5=");
+  //ret.concat(stringHumidity4);
   ret.concat("&field6=");
   ret.concat(stringSOC);
 
