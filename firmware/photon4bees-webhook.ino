@@ -6,7 +6,26 @@
 #include "Adafruit_DHT.h"
 #include "SparkFunMAX17043.h" // Include the SparkFun MAX17043 library
 
+PRODUCT_ID(1926); // replace by your product ID
+PRODUCT_VERSION(2); // increment each time you upload to the console
+
 STARTUP(WiFi.selectAntenna(ANT_EXTERNAL)); // selects the u.FL antenna
+
+
+
+void changetoListeningMode()
+{
+  pinMode(D6, INPUT);
+  int buttonState = digitalRead(D6);
+  if(buttonState == HIGH) {
+    pinMode(D7, OUTPUT);
+    digitalWrite(D7, HIGH);
+   WiFi.listen();
+ }
+}
+
+STARTUP(changetoListeningMode());
+
 
 //SoftAP HTTP Seiten zur Herstellung einer WLAN Verbindung
 //*******************SoftAP ist nur für Photon*************************
@@ -33,6 +52,8 @@ const char jsbn_1_js[] = "var dbits;var canary=0xdeadbeefcafe;var j_lm=((canary&
 const char script_js[] = "var base_url='http://192.168.0.1/';var network_list;var public_key;var rsa=new RSAKey();var scanButton=document.getElementById('scan-button');var connectButton=document.getElementById('connect-button');var copyButton=document.getElementById('copy-button');var showButton=document.getElementById('show-button');var deviceID=document.getElementById('device-id');var connectForm=document.getElementById('connect-form');var public_key_callback={success:function(a){console.log('Public key: '+a.b);public_key=a.b;rsa.setPublic(public_key.substring(58,58+256),public_key.substring(318,318+6));},error:function(a,b){console.log(a);window.alert('There was a problem fetching important information from your device. Please verify your connection, then reload this page.');}};var device_id_callback={success:function(a){var b=a.id;deviceID.value=b;},error:function(a,b){console.log(a);var c='COMMUNICATION_ERROR';deviceID.value=c;}};var scan=function(){console.log('Scanning...!');disableButtons();scanButton.innerHTML='Scanning...';connectButton.innerHTML='Connect';document.getElementById('connect-div').style.display='none';document.getElementById('networks-div').style.display='none';getRequest(base_url+'scan-ap',scan_callback);};var scan_callback={success:function(a){network_list=a.scans;console.log('I found:');var b=document.getElementById('networks-div');b.innerHTML='';if(network_list.length>0)for(var c=0;c<network_list.length;c++){ssid=network_list[c].ssid;console.log(network_list[c]);add_wifi_option(b,ssid);document.getElementById('connect-div').style.display='block';}else b.innerHTML='<p class=\\'scanning-error\\'>No networks found.</p>';},error:function(a){console.log('Scanning error:'+a);document.getElementById('networks-div').innerHTML='<p class=\\'scanning-error\\'>Scanning error.</p>';},regardless:function(){scanButton.innerHTML='Re-Scan';enableButtons();document.getElementById('networks-div').style.display='block';}};var configure=function(a){a.preventDefault();var b=get_selected_network();var c=document.getElementById('password').value;if(!b){window.alert('Please select a network!');return false;}var d={idx:0,ssid:b.ssid,pwd:rsa.encrypt(c),sec:b.sec,ch:b.ch};connectButton.innerHTML='Sending credentials...';disableButtons();console.log('Sending credentials: '+JSON.stringify(d));postRequest(base_url+'configure-ap',d,configure_callback);};var configure_callback={success:function(a){console.log('Credentials received.');connectButton.innerHTML='Credentials received...';postRequest(base_url+'connect-ap',{idx:0},connect_callback);},error:function(a,b){console.log('Configure error: '+a);window.alert('The configuration command failed, check that you are still well connected to the device\\'s WiFi hotspot and retry.');connectButton.innerHTML='Retry';enableButtons();}};var connect_callback={success:function(a){console.log('Attempting to connect to the cloud.');connectButton.innerHTML='Attempting to connect...';window.alert('Your device should now start flashing green and attempt to connect to the cloud. This usually takes about 20 seconds, after which it will begin slowly blinking cyan. \\n\\n\\nIf this process fails because you entered the wrong password, the device will flash green indefinitely. In this case, hold the setup button for 6 seconds until the device starts blinking blue again. Then reconnect to the WiFi hotspot it generates and reload this page to try again.');},error:function(a,b){console.log('Connect error: '+a);window.alert('The connect command failed, check that you are still well connected to the device\\'s WiFi hotspot and retry.');connectButton.innerHTML='Retry';enableButtons();}};var disableButtons=function(){connectButton.disabled=true;scanButton.disabled=true;};var enableButtons=function(){connectButton.disabled=false;scanButton.disabled=false;};var add_wifi_option=function(a,b){var c=document.createElement('INPUT');c.type='radio';c.value=b;c.id=b;c.name='ssid';c.className='radio';var d=document.createElement('DIV');d.className='radio-div';d.appendChild(c);var e=document.createElement('label');e.htmlFor=b;e.innerHTML=b;d.appendChild(e);a.appendChild(d);};var get_selected_network=function(){for(var a=0;a<network_list.length;a++){ssid=network_list[a].ssid;if(document.getElementById(ssid).checked)return network_list[a];}};var copy=function(){window.prompt('Copy to clipboard: Ctrl + C, Enter',deviceID.value);};var toggleShow=function(){var a=document.getElementById('password');inputType=a.type;if(inputType==='password'){showButton.innerHTML='Hide';a.type='text';}else{showButton.innerHTML='Show';a.type='password';}};var getRequest=function(a,b){var c=new XMLHttpRequest();c.open('GET',a,true);c.timeout=8000;c.send();c.onreadystatechange=function(){if(c.readyState==4)if(b){if(c.status==200){if(b.success)b.success(JSON.parse(c.responseText));}else if(b.error)b.error(c.status,c.responseText);if(b.regardless)b.regardless();}};};var postRequest=function(a,b,c){var d=JSON.stringify(b);var e=new XMLHttpRequest();e.open('POST',a,true);e.timeout=4000;e.setRequestHeader('Content-Type','multipart/form-data');e.send(d);e.onreadystatechange=function(){if(e.readyState==4)if(c){if(e.status==200){if(c.success)c.success(JSON.parse(e.responseText));}else if(c.error)c.error(e.status,e.responseText);if(c.regardless)c.regardless();}};};if(scanButton.addEventListener){copyButton.addEventListener('click',copy);showButton.addEventListener('click',toggleShow);scanButton.addEventListener('click',scan);connectForm.addEventListener('submit',configure);}else if(scanButton.attachEvent){copyButton.attachEvent('onclick',copy);showButton.attachEvent('onclick',toggleShow);scanButton.attachEvent('onclick',scan);connectForm.attachEvent('onsubmit',configure);}getRequest(base_url+'device-id',device_id_callback);getRequest(base_url+'public-key',public_key_callback);";
 
 const char prng4_js[] = "function Arcfour(){this.i=0;this.j=0;this.S=new Array();}function ARC4init(a){var b,c,d;for(b=0;b<256;++b)this.S[b]=b;c=0;for(b=0;b<256;++b){c=(c+this.S[b]+a[b%a.length])&255;d=this.S[b];this.S[b]=this.S[c];this.S[c]=d;}this.i=0;this.j=0;}function ARC4next(){var a;this.i=(this.i+1)&255;this.j=(this.j+this.S[this.i])&255;a=this.S[this.i];this.S[this.i]=this.S[this.j];this.S[this.j]=a;return this.S[(a+this.S[this.i])&255];}Arcfour.prototype.init=ARC4init;Arcfour.prototype.next=ARC4next;function prng_newstate(){return new Arcfour();}var rng_psize=256;";
+
+
 
 Page myPages[] = {
      { "/index.html", "text/html", index_html },
@@ -114,22 +135,23 @@ ExternalRGB myRGB(D0, D1, D2);
 
 //********************************************************************
 
-const int buttonPin = D4;     // Pushbutton for Listening Mode
+//const int buttonPin = D6;     // Pushbutton for Listening Mode
 
-int buttonState = 0;         // variable for reading the pushbutton status
+//int buttonState = 0;         // variable for reading the pushbutton status
+
 
 // DHT humidity/temperature sensors
-#define DHTPIN3 3     // what pin we're connected to
-//#define DHTPIN4 4
+#define DHTPIN3 D3     // what pin we're connected to
+#define DHTPIN4 D4
 
 // Uncomment whatever type you're using!
 //#define DHTTYPE DHT11		// DHT 11
 #define DHTTYPE3 DHT22		// DHT 22 (AM2302)
-//#define DHTTYPE4 DHT22		// DHT 22 (AM2302)
+#define DHTTYPE4 DHT22		// DHT 22 (AM2302)
 //#define DHTTYPE DHT21		// DHT 21 (AM2301)
 
 DHT dht_pin3(DHTPIN3, DHTTYPE3);
-//DHT dht_pin4(DHTPIN4, DHTTYPE4);
+DHT dht_pin4(DHTPIN4, DHTTYPE4);
 
 //HX711 Wägezellenverstärker
 #define DOUT  A0
@@ -152,32 +174,20 @@ String stringHumidity3 = "";
 float floatTemperature3 = 0;
 String stringTemperature3 ="";
 
-//float floatHumidity4 = 0;
-//String stringHumidity4 = "";
+float floatHumidity4 = 0;
+String stringHumidity4 = "";
 
-//float floatTemperature4 = 0;
-//String stringTemperature4 ="";
+float floatTemperature4 = 0;
+String stringTemperature4 ="";
 
 double soc = 0; // Variable to keep track of LiPo state-of-charge (SOC)
 String stringSOC = "";
 
+boolean scale_conf = false;
+
 
 void setup() {
   // put your setup code here, to run once:
-
-    // initialize the pushbutton pin as an input:
-    pinMode(buttonPin, INPUT);
-
-    // read the state of the pushbutton value:
-    buttonState = digitalRead(buttonPin);
-
-    // check if the pushbutton is pressed.
-    // if it is, the buttonState is HIGH:
-    if (buttonState == HIGH) {
-      WiFi.listen();
-    } else {
-      // nothing
-           }
 
     // Begin serial communication
     Serial.begin(115200);
@@ -196,11 +206,14 @@ void setup() {
 
     // publish the event that will trigger our Webhook
     Particle.publish("get_scalefactor");
-    delay(5000);
     Particle.publish("get_offset");
     delay(5000);
     scalefactor = str_scalefactor.toFloat();
     offset = str_offset.toFloat();
+
+    if (scalefactor != 0) {
+      scale_conf = true;
+    }
 
     scale.set_scale(scalefactor);                      //this value is obtained by calibrating the scale with known weights;
                                                  /*   How to Calibrate Your Scale
@@ -216,6 +229,9 @@ void setup() {
 
 void loop() {
 
+    Serial.println(str_scalefactor);
+    Serial.println(str_offset);
+
     scale.power_up();
     delay(5000);
     //scale.get_units(10) returns the medium of 10 measures
@@ -226,23 +242,23 @@ void loop() {
 
     //Begin DHT communication
       dht_pin3.begin();
-      //dht_pin4.begin();
+      dht_pin4.begin();
 
     // Reading temperature or humidity takes about 250 milliseconds!
     // Sensor readings may also be up to 2 seconds 'old' (its a
     // very slow sensor)
-      delay(5000);
+      delay(1000);
     	floatHumidity3 = dht_pin3.getHumidity();
       stringHumidity3 = String(floatHumidity3, 2),
     // Read temperature as Celsius
     	floatTemperature3 = dht_pin3.getTempCelcius();
       stringTemperature3 = String(floatTemperature3, 2);
 
-      //floatHumidity4 = dht_pin4.getHumidity();
-      //stringHumidity4 = String(floatHumidity4, 2),
+      floatHumidity4 = dht_pin4.getHumidity();
+      stringHumidity4 = String(floatHumidity4, 2);
     // Read temperature as Celsius
-    	//floatTemperature4 = dht_pin4.getTempCelcius();
-      //stringTemperature4 = String(floatTemperature4, 2);
+    	floatTemperature4 = dht_pin4.getTempCelcius();
+      stringTemperature4 = String(floatTemperature4, 2);
 
     // Set up the MAX17043 LiPo fuel gauge:
       lipo.begin(); // Initialize the MAX17043 LiPo fuel gauge
@@ -257,12 +273,17 @@ void loop() {
       stringSOC = String(soc);
       delay(1000);
 
+      if (!scale_conf){
+        System.sleep(SLEEP_MODE_DEEP, 3600);
+
+      } else {
+
       Particle.publish("cloud4bees", JSON(), PRIVATE); // Send JSON Particle Cloud
 
       delay(1000);
 
       System.sleep(SLEEP_MODE_DEEP, 3550);
-
+    }
 }
 
 // This function will get called when scalefactor comes in
@@ -283,10 +304,10 @@ String JSON() {
   ret.concat(stringTemperature3);
   ret.concat("&field3=");
   ret.concat(stringHumidity3);
-  //ret.concat("&field4=");
-  //ret.concat(stringTemperature4);
-  //ret.concat("&field5=");
-  //ret.concat(stringHumidity4);
+  ret.concat("&field4=");
+  ret.concat(stringTemperature4);
+  ret.concat("&field5=");
+  ret.concat(stringHumidity4);
   ret.concat("&field6=");
   ret.concat(stringSOC);
 
