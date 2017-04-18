@@ -3,7 +3,6 @@
 #include "HX711.h"
 #include "Particle.h"  //Softap_http
 #include "softap_http.h"  //SoftAP
-#include "Adafruit_DHT.h"
 #include "SparkFunMAX17043.h" // Include the SparkFun MAX17043 library
 
 //Piettetech_DHT
