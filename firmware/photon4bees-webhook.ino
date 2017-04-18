@@ -6,6 +6,8 @@
 #include "Adafruit_DHT.h"
 #include "SparkFunMAX17043.h" // Include the SparkFun MAX17043 library
 
+//Piettetech_DHT Library verwenden
+
 PRODUCT_ID(1926); // replace by your product ID
 PRODUCT_VERSION(2); // increment each time you upload to the console
 
