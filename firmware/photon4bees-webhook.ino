@@ -4,6 +4,7 @@
 #include "Particle.h"  //Softap_http
 #include "softap_http.h"  //SoftAP
 #include "SparkFunMAX17043.h" // Include the SparkFun MAX17043 library
+#include "PietteTech_DHT.h" //Include P
 
 //Piettetech_DHT
 
@@ -152,8 +153,11 @@ ExternalRGB myRGB(D0, D1, D2);
 #define DHTTYPE4 DHT22		// DHT 22 (AM2302)
 //#define DHTTYPE DHT21		// DHT 21 (AM2301)
 
-DHT dht_pin3(DHTPIN3, DHTTYPE3);
-DHT dht_pin4(DHTPIN4, DHTTYPE4);
+//DHT dht_pin3(DHTPIN3, DHTTYPE3);
+//DHT dht_pin4(DHTPIN4, DHTTYPE4);
+
+PietteTech_DHT dht_pin3(DHTPIN3, DHTTYPE3);
+PietteTech_DHT dht_pin4(DHTPIN4, DHTTYPE4);
 
 //HX711 Wägezellenverstärker
 #define DOUT  A0
@@ -243,8 +247,10 @@ void loop() {
     scale.power_down();
 
     //Begin DHT communication
-      dht_pin3.begin();
-      dht_pin4.begin();
+      //dht_pin3.begin();
+      //dht_pin4.begin();
+      int result3 = dht_pin3.acquireAndWait(1000); // wait up to 1 sec (default indefinitely)
+      int result4 = dht_pin4.acquireAndWait(1000);
 
     // Reading temperature or humidity takes about 250 milliseconds!
     // Sensor readings may also be up to 2 seconds 'old' (its a
@@ -253,13 +259,15 @@ void loop() {
     	floatHumidity3 = dht_pin3.getHumidity();
       stringHumidity3 = String(floatHumidity3, 2),
     // Read temperature as Celsius
-    	floatTemperature3 = dht_pin3.getTempCelcius();
+    	//floatTemperature3 = dht_pin3.getTempCelcius();
+      floatTemperature3 = dht_pin3.getCelsius();
       stringTemperature3 = String(floatTemperature3, 2);
 
       floatHumidity4 = dht_pin4.getHumidity();
       stringHumidity4 = String(floatHumidity4, 2);
     // Read temperature as Celsius
-    	floatTemperature4 = dht_pin4.getTempCelcius();
+    	//floatTemperature4 = dht_pin4.getTempCelcius();
+      floatTemperature4 = dht_pin4.getCelsius();
       stringTemperature4 = String(floatTemperature4, 2);
 
     // Set up the MAX17043 LiPo fuel gauge:
@@ -275,17 +283,17 @@ void loop() {
       stringSOC = String(soc);
       delay(1000);
 
-      if (!scale_conf){
+      /*if (!scale_conf){
         System.sleep(SLEEP_MODE_DEEP, 3600);
 
       } else {
-
+*/
       Particle.publish("cloud4bees", JSON(), PRIVATE); // Send JSON Particle Cloud
 
       delay(1000);
 
-      System.sleep(SLEEP_MODE_DEEP, 3550);
-    }
+      System.sleep(SLEEP_MODE_DEEP, 60);
+    //}
 }
 
 // This function will get called when scalefactor comes in
