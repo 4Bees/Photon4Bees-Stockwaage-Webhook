@@ -10,7 +10,7 @@
 
 
 PRODUCT_ID(1926); // replace by your product ID
-PRODUCT_VERSION(2); // increment each time you upload to the console
+PRODUCT_VERSION(3); // increment each time you upload to the console
 
 STARTUP(WiFi.selectAntenna(ANT_EXTERNAL)); // selects the u.FL antenna
 
@@ -18,11 +18,11 @@ STARTUP(WiFi.selectAntenna(ANT_EXTERNAL)); // selects the u.FL antenna
 
 void changetoListeningMode()
 {
-  pinMode(D6, INPUT);
-  int buttonState = digitalRead(D6);
+  pinMode(D4, INPUT);
+  int buttonState = digitalRead(D4);
   if(buttonState == HIGH) {
-    pinMode(D7, OUTPUT);
-    digitalWrite(D7, HIGH);
+    //pinMode(D7, OUTPUT);
+    //digitalWrite(D7, HIGH);
    WiFi.listen();
  }
 }
@@ -283,17 +283,17 @@ void loop() {
       stringSOC = String(soc);
       delay(1000);
 
-      /*if (!scale_conf){
-        System.sleep(SLEEP_MODE_DEEP, 3600);
+      if (!scale_conf){
+        System.sleep(SLEEP_MODE_DEEP, 3570);
 
       } else {
-*/
+
       Particle.publish("cloud4bees", JSON(), PRIVATE); // Send JSON Particle Cloud
 
       delay(1000);
 
-      System.sleep(SLEEP_MODE_DEEP, 60);
-    //}
+      System.sleep(SLEEP_MODE_DEEP, 3570);
+    }
 }
 
 // This function will get called when scalefactor comes in
