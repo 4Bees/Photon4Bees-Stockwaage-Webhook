@@ -301,11 +301,11 @@ void setup() {
     Particle.publish("get_scalefactor");
     delay(5000); //Wichtig: Für ein sicheres Empfangen der Daten!!!
     Particle.publish("get_offset");
-    delay(1000);
+    delay(5000);
     scalefactor = str_scalefactor.toFloat();
     offset = str_offset.toFloat();
 
-    delay(1000);
+    delay(5000);
 
     if (scalefactor != 0) {
       scale_conf = true;
