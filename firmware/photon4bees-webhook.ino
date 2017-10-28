@@ -212,10 +212,12 @@ void setup() {
 
     // publish the event that will trigger our Webhook
     Particle.publish("get_scalefactor");
+    delay(5000); //Wichtig: Webhook gnügend Zeit geben, um die Daten zu Empfangen.
     Particle.publish("get_offset");
-    delay(5000);
+    delay(5000); //Wichtig: Webhook gnügend Zeit geben, um die Daten zu Empfangen.
     scalefactor = str_scalefactor.toFloat();
     offset = str_offset.toFloat();
+    delay(5000); //Wichtig: Webhook gnügend Zeit geben, um die Daten zu Empfangen.
 
     if (scalefactor != 0) {
       scale_conf = true;
