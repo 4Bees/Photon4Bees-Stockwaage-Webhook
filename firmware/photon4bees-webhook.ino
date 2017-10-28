@@ -7,14 +7,14 @@
 #include "PietteTech_DHT.h" //Include P
 
 //Piettetech_DHT
+//Code für 3 DHT22 Sensoren
 
-
-PRODUCT_ID(1926); // replace by your product ID
-PRODUCT_VERSION(2); // increment each time you upload to the console
+//PRODUCT_ID(1926); // replace by your product ID
+//PRODUCT_VERSION(2); // increment each time you upload to the console
 
 STARTUP(WiFi.selectAntenna(ANT_EXTERNAL)); // selects the u.FL antenna
 
-
+SYSTEM_THREAD(ENABLED);
 
 void changetoListeningMode()
 {
@@ -40,6 +40,59 @@ struct Page
 };
 
 
+const char control_html[] = {
+"<!DOCTYPE html>"
+"<html lang=\"en\">"
+"<head>"
+"<meta charset=\"utf-8\">"
+"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0;\" />"
+"<title>MikeStand</title>"
+"<style>"
+"form{"
+"font: bold 15px/30px Georgia;"
+"width: 100%;"
+"height: 100%;"
+"margin: 0 auto;"
+"}"
+"input[type=\"range\"].vertikal {"
+"writing-mode: bt-lr; /* IE */"
+"-webkit-appearance: slider-vertical; /* WebKit */"
+"width: 10%;"
+"height: 70%;"
+"}"
+"output {"
+"position:absolute;"
+"top:calc(50% - 2em);"
+"width: 75%;"
+"height: 2em;"
+"text-align: center;"
+"color: white;"
+"background-image: linear-gradient(160deg, white, lightgrey 10%, grey );"
+"border-radius: 1em;"
+"margin:0 auto;"
+"padding:1em 0.5em;"
+"display: inline-block;"
+"}"
+"output:after {"
+"content: \"cm\";"
+"width:2em;"
+"}"
+"</style>"
+"</head>"
+"<body>"
+"<h1 style=\"text-align : center;\">HeightSetting</h1>"
+"<form oninput=\"x.value=parseInt(dheight.value)\">"
+"<div style=\"position:relative;\">"
+"<input class=\"vertikal\" name=\"myValue\" id=\"dheight\" type=\"range\" min=\"-20\" value=\"0\" max=\"20\" orient=\"vertical\" >"
+"<output name=\"x\" for=\"dheight\">0</output>"
+"</div>"
+"<br/>"
+"<button submit style=\"width:100%;padding:0.5em;\">Go!</button>"
+"</form>"
+"</body>"
+"</html>"
+};
+
 const char index_html[] = "<!DOCTYPE html><html><head><meta name='viewport' content='width=device-width, initial-scale=1'><title>Setup your device</title><link rel='stylesheet' type='text/css' href='style.css'></head><body><h1>Connect me to your WiFi!</h1><h3>My device ID:</h3><input type=text id='device-id' size='25' value='' disabled/><button type='button' class='input-helper' id='copy-button'>Copy</button><div id='scan-div'><h3>Scan for visible WiFi networks</h3><button id='scan-button' type='button'>Scan</button></div><div id='networks-div'></div><div id='connect-div' style='display: none'><p>Don't see your network? Move me closer to your router, then re-scan.</p><form id='connect-form'><input type='password' id='password' size='25' placeholder='password'/><button type='button' class='input-helper' id='show-button'>Show</button><button type='submit' id='connect-button'>Connect</button></form></div><script src='rsa-utils/jsbn_1.js'></script><script src='rsa-utils/jsbn_2.js'></script><script src='rsa-utils/prng4.js'></script><script src='rsa-utils/rng.js'></script><script src='rsa-utils/rsa.js'></script><script src='script.js'></script></body></html>";
 
 const char rsa_js[] = "function parseBigInt(a,b){return new BigInteger(a,b);}function linebrk(a,b){var c='';var d=0;while(d+b<a.length){c+=a.substring(d,d+b)+'\\n';d+=b;}return c+a.substring(d,a.length);}function byte2Hex(a){if(a<0x10)return '0'+a.toString(16);else return a.toString(16);}function pkcs1pad2(a,b){if(b<a.length+11){alert('Message too long for RSA');return null;}var c=new Array();var d=a.length-1;while(d>=0&&b>0){var e=a.charCodeAt(d--);if(e<128)c[--b]=e;else if((e>127)&&(e<2048)){c[--b]=(e&63)|128;c[--b]=(e>>6)|192;}else{c[--b]=(e&63)|128;c[--b]=((e>>6)&63)|128;c[--b]=(e>>12)|224;}}c[--b]=0;var f=new SecureRandom();var g=new Array();while(b>2){g[0]=0;while(g[0]==0)f.nextBytes(g);c[--b]=g[0];}c[--b]=2;c[--b]=0;return new BigInteger(c);}function RSAKey(){this.n=null;this.e=0;this.d=null;this.p=null;this.q=null;this.dmp1=null;this.dmq1=null;this.coeff=null;}function RSASetPublic(a,b){if(a!=null&&b!=null&&a.length>0&&b.length>0){this.n=parseBigInt(a,16);this.e=parseInt(b,16);}else alert('Invalid RSA public key');}function RSADoPublic(a){return a.modPowInt(this.e,this.n);}function RSAEncrypt(a){var b=pkcs1pad2(a,(this.n.bitLength()+7)>>3);if(b==null)return null;var c=this.doPublic(b);if(c==null)return null;var d=c.toString(16);if((d.length&1)==0)return d;else return '0'+d;}RSAKey.prototype.doPublic=RSADoPublic;RSAKey.prototype.setPublic=RSASetPublic;RSAKey.prototype.encrypt=RSAEncrypt;";
@@ -58,8 +111,10 @@ const char prng4_js[] = "function Arcfour(){this.i=0;this.j=0;this.S=new Array()
 
 
 
+
 Page myPages[] = {
      { "/index.html", "text/html", index_html },
+     { "/control.html", "text/html", control_html },
      { "/rsa-utils/rsa.js", "application/javascript", rsa_js },
      { "/style.css", "text/css", style_css },
      { "/rsa-utils/rng.js", "application/javascript", rng_js },
@@ -72,14 +127,37 @@ Page myPages[] = {
 
 void myPage(const char* url, ResponseCallback* cb, void* cbArg, Reader* body, Writer* result, void* reserved)
 {
-    Serial.printlnf("handling page %s", url);
 
-    if (strcmp(url,"/index")==0) {
+
+    char  _url[strlen(url)+1];
+    char* query;
+    char* value;
+
+    strcpy(_url, url);    // create a working copy of url
+    if (strcmp(strtok_r(_url, "?&", &query), myPages[0].url) == 0)
+    { // is it my page (which I put to the front of myPages
+      for(; query; strtok_r(NULL, "?&", &query))
+      { // iterate over possibly query parameters?
+        if(strcmp(strtok_r(query, "=", &value), "myValue") == 0)
+        { // I'm only interested in this specific key
+          char* val = strtok_r(NULL, "?&=", &value);
+
+          //doSomethingWith(val);
+
+        }
+      }
+    }
+
+
+
+    if (strcmp(_url,"/index")==0) {
         Serial.println("sending redirect");
         Header h("Location: /index.html\r\n");
         cb(cbArg, 0, 301, "text/plain", &h);
         return;
     }
+
+
 
     int8_t idx = 0;
     for (;;idx++) {
@@ -88,7 +166,7 @@ void myPage(const char* url, ResponseCallback* cb, void* cbArg, Reader* body, Wr
             idx = -1;
             break;
         }
-        else if (strcmp(url, p.url)==0) {
+        else if (strcmp(_url, p.url)==0) {
             break;
         }
     }
@@ -146,11 +224,13 @@ ExternalRGB myRGB(D0, D1, D2);
 // DHT humidity/temperature sensors
 #define DHTPIN3 D3     // what pin we're connected to
 #define DHTPIN4 D4
+#define DHTPIN5 D5
 
 // Uncomment whatever type you're using!
 //#define DHTTYPE DHT11		// DHT 11
 #define DHTTYPE3 DHT22		// DHT 22 (AM2302)
 #define DHTTYPE4 DHT22		// DHT 22 (AM2302)
+#define DHTTYPE5 DHT22		// DHT 22 (AM2302)
 //#define DHTTYPE DHT21		// DHT 21 (AM2301)
 
 //DHT dht_pin3(DHTPIN3, DHTTYPE3);
@@ -158,6 +238,7 @@ ExternalRGB myRGB(D0, D1, D2);
 
 PietteTech_DHT dht_pin3(DHTPIN3, DHTTYPE3);
 PietteTech_DHT dht_pin4(DHTPIN4, DHTTYPE4);
+PietteTech_DHT dht_pin5(DHTPIN5, DHTTYPE5);
 
 //HX711 Wägezellenverstärker
 #define DOUT  A0
@@ -186,6 +267,12 @@ String stringHumidity4 = "";
 float floatTemperature4 = 0;
 String stringTemperature4 ="";
 
+float floatHumidity5 = 0;
+String stringHumidity5 = "";
+
+float floatTemperature5 = 0;
+String stringTemperature5 ="";
+
 double soc = 0; // Variable to keep track of LiPo state-of-charge (SOC)
 String stringSOC = "";
 
@@ -196,7 +283,7 @@ void setup() {
   // put your setup code here, to run once:
 
     // Begin serial communication
-    Serial.begin(115200);
+    Serial.begin(9600);
 
     // Listen for the webhook response, and call gotWeatherData()
     Particle.subscribe("hook-response/get_scalefactor", gotScalefactor, MY_DEVICES);
@@ -212,10 +299,13 @@ void setup() {
 
     // publish the event that will trigger our Webhook
     Particle.publish("get_scalefactor");
+    delay(5000); //Wichtig: Für ein sicheres Empfangen der Daten!!!
     Particle.publish("get_offset");
-    delay(5000);
+    delay(1000);
     scalefactor = str_scalefactor.toFloat();
     offset = str_offset.toFloat();
+
+    delay(1000);
 
     if (scalefactor != 0) {
       scale_conf = true;
@@ -251,24 +341,31 @@ void loop() {
       //dht_pin4.begin();
       int result3 = dht_pin3.acquireAndWait(1000); // wait up to 1 sec (default indefinitely)
       int result4 = dht_pin4.acquireAndWait(1000);
+      int result5 = dht_pin5.acquireAndWait(1000);
 
     // Reading temperature or humidity takes about 250 milliseconds!
     // Sensor readings may also be up to 2 seconds 'old' (its a
     // very slow sensor)
       delay(1000);
+    //Read Humidity in %
     	floatHumidity3 = dht_pin3.getHumidity();
       stringHumidity3 = String(floatHumidity3, 2),
     // Read temperature as Celsius
-    	//floatTemperature3 = dht_pin3.getTempCelcius();
       floatTemperature3 = dht_pin3.getCelsius();
       stringTemperature3 = String(floatTemperature3, 2);
-
+    //Read Humidity in %
       floatHumidity4 = dht_pin4.getHumidity();
       stringHumidity4 = String(floatHumidity4, 2);
     // Read temperature as Celsius
-    	//floatTemperature4 = dht_pin4.getTempCelcius();
       floatTemperature4 = dht_pin4.getCelsius();
       stringTemperature4 = String(floatTemperature4, 2);
+    //Read Humidity in %
+      floatHumidity5 = dht_pin5.getHumidity();
+      stringHumidity5 = String(floatHumidity5, 2);
+    // Read temperature as Celsius
+      floatTemperature5 = dht_pin5.getCelsius();
+      stringTemperature5 = String(floatTemperature5, 2);
+
 
     // Set up the MAX17043 LiPo fuel gauge:
       lipo.begin(); // Initialize the MAX17043 LiPo fuel gauge
@@ -283,17 +380,19 @@ void loop() {
       stringSOC = String(soc);
       delay(1000);
 
-      /*if (!scale_conf){
-        System.sleep(SLEEP_MODE_DEEP, 3600);
+      if (!scale_conf){
+        System.sleep(SLEEP_MODE_DEEP, 3575);
+        //delay(60000);
 
       } else {
-*/
+
       Particle.publish("cloud4bees", JSON(), PRIVATE); // Send JSON Particle Cloud
 
-      delay(1000);
+      //delay(60000);
 
-      System.sleep(SLEEP_MODE_DEEP, 60);
-    //}
+      System.sleep(SLEEP_MODE_DEEP, 3575);
+
+    }
 }
 
 // This function will get called when scalefactor comes in
@@ -306,6 +405,12 @@ void gotOffset(const char *name, const char *data) {
     str_offset = String(data);
 }
 
+/*void doSomethingWith(const char *val){
+  String str_height = String(val);
+  Serial.print("Height: ");
+  Serial.println(str_height);
+}
+*/
 
 String JSON() {
  String ret = "&field1=";
@@ -317,7 +422,7 @@ String JSON() {
   ret.concat("&field4=");
   ret.concat(stringTemperature4);
   ret.concat("&field5=");
-  ret.concat(stringHumidity4);
+  ret.concat(stringTemperature5);
   ret.concat("&field6=");
   ret.concat(stringSOC);
 
